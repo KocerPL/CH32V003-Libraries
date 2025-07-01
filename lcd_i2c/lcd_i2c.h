@@ -122,7 +122,7 @@ uint8_t Lcd_I2C_IsBacklightEnabled(Lcd_I2C* lcd);
 void Lcd_I2C_WriteUint(Lcd_I2C* lcd,uint8_t digits, uint32_t value,uint8_t deleteZeros);
 /**
  * @brief Writes float on lcd.
- * WARNING: VERY MEMORY EXPENSIVE 10% on ch32v003f4p6.
+ * WARNING: VERY MEMORY EXPENSIVE 10% on ch32v003f4p6(Better use fixed point).
  * @param lcd Lcd configuration structure
  * @param digits how many digits to append(from right side).
  * @param postDigits how many digits to append after dot(from left side).
@@ -138,3 +138,14 @@ void Lcd_I2C_WriteFloat(Lcd_I2C* lcd,uint8_t digits,uint8_t postDigits, float va
  * @param deleteZeros Do delete leading zeros?(0 means no)
  */
 void Lcd_I2C_WriteInt(Lcd_I2C* lcd,uint8_t digits, int32_t value,uint8_t deleteZeros);
+/**
+ * @brief Writes fixed point fractions value on screen(Saved in int).
+ * 
+ * @param lcd Lcd configuration structure
+ * @param digits how many digits to append(from right side).
+ * @param postDigits how many digits to append after dot(from left side).
+ * @param value Value to show.
+ * @param fixedPoint specifies after how much digits from right append .
+ * @param deleteZeros  Do delete leading zeros?(0 means no)
+ */
+void Lcd_I2C_WriteFixedPoint(Lcd_I2C* lcd,uint8_t digits,uint8_t postDigits, int32_t value,uint8_t fixedPoint, uint8_t deleteZeros);

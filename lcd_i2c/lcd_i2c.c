@@ -57,6 +57,14 @@ __attribute__((weak)) void I2C1_SendByte(uint8_t dataByte,uint32_t timeout)
     I2C_SendData(I2C1,dataByte);
     while(!I2C_CheckEvent(I2C1,I2C_EVENT_MASTER_BYTE_TRANSMITTED));
 }
+__attribute__((weak)) uint32_t uintpow(uint32_t base, const uint8_t power)
+{
+    uint32_t result=base;
+    for(uint8_t i=1;i<power;i++)
+        result*=base;
+    return result;
+
+}
 /*__attribute__((weak)) void I2C1_ReceiveByte(uint8_t* receivedByte,uint32_t timeout)
 {
 
@@ -270,8 +278,7 @@ void Lcd_I2C_Clear(Lcd_I2C* lcd)
 
 void Lcd_I2C_WriteUint(Lcd_I2C* lcd,uint8_t digits, uint32_t value,uint8_t deleteZeros)
 {
-            uint32_t i=1;
-            for(uint8_t j =0;j<digits;j++) i*=10;
+            uint32_t i=uintpow(10,digits);
             do{
                 i/=10;
                 uint32_t nValue = ((value/i)%10);
@@ -290,7 +297,19 @@ void Lcd_I2C_WriteFloat(Lcd_I2C* lcd,uint8_t digits,uint8_t postDigits, float va
     Lcd_I2C_WriteUint(lcd,digits,(uint16_t)value,deleteZeros);
     Lcd_I2C_Write(lcd,'.');
     for(uint8_t j =0;j<postDigits;j++) value*=10;
-    Lcd_I2C_WriteUint(lcd,postDigits,(uint16_t)(value),0);
+    Lcd_I2C_WriteUint(lcd,postDigits,(uint32_t)(value),0);
+}
+void Lcd_I2C_WriteFixedPoint(Lcd_I2C* lcd,uint8_t digits,uint8_t postDigits, int32_t value,uint8_t fixedPoint, uint8_t deleteZeros)
+{
+    uint32_t divider = uintpow(10,fixedPoint);
+    {
+    int32_t beforeDot = value/(int32_t)divider;
+    Lcd_I2C_WriteInt(lcd,digits,beforeDot,deleteZeros);
+    }
+    Lcd_I2C_Write(lcd,'.');
+    if(value<0) value*=-1;
+    uint32_t afterDot = (value)%divider;
+    Lcd_I2C_WriteUint(lcd,postDigits,afterDot,0);
 }
 void Lcd_I2C_WriteInt(Lcd_I2C* lcd,uint8_t digits, int32_t value,uint8_t deleteZeros)
 {

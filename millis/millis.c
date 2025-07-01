@@ -1,4 +1,4 @@
-#include "ch32v003_millis.h"
+#include "millis.h"
 uint64_t curMillis =0;
 void Millis_Init(int16_t periodCorrection)
 {
