@@ -107,6 +107,11 @@ void privLcdSendDisplayControl(Lcd_I2C* lcd)
 }
 void Lcd_I2C_Write(Lcd_I2C* lcd,char character)
 {
+    if(character == '\n')
+    {
+        Lcd_I2C_SetCursorAtNextLine(lcd);
+        return;
+    }
     privLcdI2Csend4Bits(lcd->address,((character>>4)&0x0F),lcd->lcd_i2c_functions&0b10000000,1);  
     privLcdI2Csend4Bits(lcd->address,((character)&0x0F),lcd->lcd_i2c_functions&0b10000000,1);
     //DEBUG ONLY: printf("Sending char: %c,\n",character);
@@ -115,6 +120,10 @@ void Lcd_I2C_Write(Lcd_I2C* lcd,char character)
     {
             Lcd_I2C_SetCursor(lcd,0,(lcd->priv_current_Cursor_pos)/(lcd->columns));
     }
+}
+void Lcd_I2C_SetCursorAtNextLine(Lcd_I2C* lcd)
+{
+    Lcd_I2C_SetCursor(lcd,0,(lcd->priv_current_Cursor_pos/lcd->columns)+1);
 }
 void Lcd_I2C_Init(Lcd_I2C* lcd)
 {
@@ -211,10 +220,6 @@ void Lcd_I2C_Printf(Lcd_I2C* lcd,char* format,...)
                 va_end(arg);
                 return;
             }
-            else if(*traverse == '\n')
-            {
-                Lcd_I2C_SetCursor(lcd,0,(lcd->priv_current_Cursor_pos%lcd->columns)+1);
-            }
             else
             {
                 Lcd_I2C_Write(lcd,*traverse);
@@ -262,10 +267,6 @@ void Lcd_I2C_SetCursor(Lcd_I2C* lcd, uint8_t col, uint8_t row)
     if(row>=(lcd->rows))
     {
         row=0;
-    }
-    if(row>=4)
-    {
-        row=3;
     }
     lcd->priv_current_Cursor_pos=col+(lcd->columns*row);
     privLcdI2CsendCommand(lcd,LCD_SETDDRAMADDR |(col+lcd->priv_row_offsets[row]));

@@ -33,11 +33,17 @@ typedef struct
 /**
  * @brief Sets cursor on specified row and column
  * If row is out of the display, library automatically jumps to first row("Wraps around").
- * @param lcd Lcd_I2C object
+ * @param lcd Lcd_I2C configuration structure
  * @param col Column ordered from 0
  * @param row Row ordered from 0
  */
 void Lcd_I2C_SetCursor(Lcd_I2C* lcd, uint8_t col, uint8_t row);
+/**
+ * @brief Set cursor to beginning of next line
+ * 
+ * @param lcd Lcd_I2C configuration structure
+ */
+void Lcd_I2C_SetCursorAtNextLine(Lcd_I2C* lcd);
 /**
  * @brief Initializes lcd with configuration in Lcd_I2C structure
  * @param lcd Lcd configuration structure
